@@ -127,21 +127,23 @@ fi
 echo "$GREEN ====== Copying build artifacts $NOCOLOR"
 
 # Copy artifacts for iOS
-rsync -a ./out/lib/libmat.a "./wrappers/xamarin/sdk/OneDsCppSdk.iOS.Bindings/Native References/"
+rsync -a ./out/lib/libmat.a "./wrappers/maui/sdk/OneDsCppSdk.iOS.Bindings/Native References/"
 
 # Copy artifacts for Android
-mkdir -p ./wrappers/xamarin/sdk/OneDsCppSdk.Android.Bindings/lib
-rsync -a ./lib/android_build/maesdk/build/intermediates/cmake/$BUILD_CONFIGURATION/obj/arm64-v8a/*.so ./wrappers/xamarin/sdk/OneDsCppSdk.Android.Bindings/lib/arm64-v8a/
-rsync -a ./lib/android_build/maesdk/build/intermediates/cmake/$BUILD_CONFIGURATION/obj/armeabi-v7a/*.so ./wrappers/xamarin/sdk/OneDsCppSdk.Android.Bindings/lib/armeabi-v7a/
-rsync -a ./lib/android_build/maesdk/build/intermediates/cmake/$BUILD_CONFIGURATION/obj/x86/*.so ./wrappers/xamarin/sdk/OneDsCppSdk.Android.Bindings/lib/x86/
-rsync -a ./lib/android_build/maesdk/build/intermediates/cmake/$BUILD_CONFIGURATION/obj/x86_64/*.so ./wrappers/xamarin/sdk/OneDsCppSdk.Android.Bindings/lib/x86_64/
-rsync -a ./lib/android_build/maesdk/build/outputs/aar/maesdk-$BUILD_CONFIGURATION.aar ./wrappers/xamarin/sdk/OneDsCppSdk.Android.Bindings/Jars/
+# mkdir -p ./wrappers/xamarin/sdk/OneDsCppSdk.Android.Bindings/lib
+# rsync -a ./lib/android_build/maesdk/build/intermediates/cmake/$BUILD_CONFIGURATION/obj/arm64-v8a/*.so ./wrappers/xamarin/sdk/OneDsCppSdk.Android.Bindings/lib/arm64-v8a/
+# rsync -a ./lib/android_build/maesdk/build/intermediates/cmake/$BUILD_CONFIGURATION/obj/armeabi-v7a/*.so ./wrappers/xamarin/sdk/OneDsCppSdk.Android.Bindings/lib/armeabi-v7a/
+# rsync -a ./lib/android_build/maesdk/build/intermediates/cmake/$BUILD_CONFIGURATION/obj/x86/*.so ./wrappers/xamarin/sdk/OneDsCppSdk.Android.Bindings/lib/x86/
+# rsync -a ./lib/android_build/maesdk/build/intermediates/cmake/$BUILD_CONFIGURATION/obj/x86_64/*.so ./wrappers/xamarin/sdk/OneDsCppSdk.Android.Bindings/lib/x86_64/
+# rsync -a ./lib/android_build/maesdk/build/outputs/aar/maesdk-$BUILD_CONFIGURATION.aar ./wrappers/xamarin/sdk/OneDsCppSdk.Android.Bindings/Jars/
 
 # Build Xamarin Bindings Solution
-pushd ./wrappers/xamarin
+pushd ./wrappers/maui
 
-echo "$GREEN ====== Building Xamarin bindings $NOCOLOR"
-msbuild ./Microsoft.Applications.Events.Xamarin.sln /p:Configuration=$BUILD_CONFIGURATION -restore -v:minimal
+echo "$GREEN ====== Restoring NUGET packages $NOCOLOR"
+dotnet restore ./Microsoft.Applications.Events.sln /p:Configuration=$BUILD_CONFIGURATION
+echo "$GREEN ====== Building MAUI bindings $NOCOLOR"
+dotnet build ./Microsoft.Applications.Events.sln /p:Configuration=$BUILD_CONFIGURATION -v:normal
 
 if [ "$PACKAGE" == true ]; then
     echo "$GREEN ====== Creating NuGet package $NOCOLOR"
@@ -150,7 +152,7 @@ if [ "$PACKAGE" == true ]; then
     VERSION=$(git describe --tags --match="v*.*.*" | sed  's/^v\([0-9]*\(\.[0-9]*\)*\).*$/\1/g')
     echo "Version: $VERSION"
 
-    nuget pack ./Microsoft.Applications.Events.nuspec -Version "$VERSION"
+    nuget pack ./Microsoft.Applications.Events.nuspec # -Version "$VERSION"
 fi
 
 popd

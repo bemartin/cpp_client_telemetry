@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.6...4.0)
 project(MSTelemetry)
 
 # Set installation prefix for macOS and Linux
@@ -128,7 +128,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
   set(REL_FLAGS "${WARN_FLAGS}")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
   # AppleClang does not support -ffunction-sections and -fdata-sections with the -fembed-bitcode and -fembed-bitcode-marker
-  set(REL_FLAGS "-Os ${WARN_FLAGS} -fmerge-all-constants -ffast-math")
+  set(REL_FLAGS "-Os ${WARN_FLAGS} -fmerge-all-constants -ffast-math -fno-finite-math-only")
 else()
   # Using clang - strip unsupported GCC options
   set(REL_FLAGS "-Os ${WARN_FLAGS} -ffunction-sections -fmerge-all-constants -ffast-math")
@@ -275,7 +275,7 @@ option(BUILD_PRIVACYGUARD "Build Privacy Guard"     YES)
 option(BUILD_CDS          "Build CDS - Common Diagnostic Stack"     YES)
 option(BUILD_LIVEEVENTINSPECTOR   "Build Live Event Inspector"      YES)
 option(BUILD_SIGNALS      "Build Signals"           YES)
-option(BUILD_SANITIZER    "Build Sanitizer"         YES)
+option(BUILD_SANITIZER    "Build Sanitizer"         NO)
 option(LINK_STATIC_DEPENDS "Link dependencies for static build"     YES)
 
 # Enable Azure Monitor / Application Insights end-point support

@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net8.0-ios18.0</TargetFrameworks>
+        <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>true</ImplicitUsings>
+        <IsBindingProject>true</IsBindingProject>
+        <RootNamespace>Microsoft.Applications.Events</RootNamespace>
+        <AssemblyName>Microsoft.Applications.Events</AssemblyName>
+        <MtouchExtraArgs>-gcc_flags "-Xlinker -ld_classic"</MtouchExtraArgs>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ObjcBindingApiDefinition Include="ApiDefinitions.cs"/>
+        <ObjcBindingCoreSource Include="StructsAndEnums.cs"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\OneDsCppSdk.DotNet.Bindings\LogConfigurationKey.cs">
+            <Link>LogConfigurationKey.cs</Link>
+        </Compile>
+    </ItemGroup>
+    <ItemGroup>
+        <NativeReference Include="Native References/libmat.a">
+            <Kind>Static</Kind>
+            <IsCxx>True</IsCxx>
+            <ForceLoad>True</ForceLoad>
+            <SmartLink>True</SmartLink>
+            <LinkerFlags>-lsqlite3.0 -framework SystemConfiguration -framework Network</LinkerFlags>
+        </NativeReference>
+    </ItemGroup>
+</Project>

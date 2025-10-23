@@ -1,12 +1,12 @@
 android {
 
-    compileSdkVersion    = 32
+    compileSdkVersion    = 35
 
     ndkVersion           =  System.getenv("ANDROID_NDK_VERSION") ?: "27.0.12077973"
 
     defaultConfig {
-        minSdkVersion    19
-        targetSdkVersion 31
+        minSdkVersion    21
+        targetSdkVersion 35
     }
 }
 
