@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net8.0-ios18.0</TargetFrameworks>
+        <TargetFrameworks>net9.0-ios18.0</TargetFrameworks>
         <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
         <Nullable>enable</Nullable>
         <ImplicitUsings>true</ImplicitUsings>

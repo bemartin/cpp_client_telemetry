@@ -3,12 +3,12 @@
 if [ "$1" == "help" ] || [ "$1" == "?" ]; then
     echo
     echo "build-maui.sh usage:"
-    echo "./build-maui.sh [debug|release] [cleanall|cleanxamarin] [xamarinonly|skipios|skipandroid] [package]"
+    echo "./build-maui.sh [debug|release] [cleanall|cleanmaui] [mauionly|skipios|skipandroid] [package]"
     echo
     echo "- debug|release: build configuration to use. Default to release of not specified"
     echo "- cleanall: deletes output and temporary directories for all platforms"
-    echo "- cleanxamarin: deletes output and temporary directories for the Xamarin solution only"
-    echo "- xamarinonly: only builds the Xamarin solution, assuming that iOS and Android SDKs have already been built"
+    echo "- cleanmaui: deletes output and temporary directories for the Xamarin solution only"
+    echo "- mauionly: only builds the Xamarin solution, assuming that iOS and Android SDKs have already been built"
     echo "- skipios: skip building the SDK for iOS, assuming it has already been built"
     echo "- skipandroid: skip building the SDK for Android, assuming it has already been built"
     echo "- package: packages the Xamarin bindings in a NuGet package"
@@ -22,7 +22,7 @@ else
     BUILD_CONFIGURATION="release"
 fi
 
-if [ "$1" == "cleanxamarin" ] || [ "$2" == "cleanxamarin" ]; then
+if [ "$1" == "cleanmaui" ] || [ "$2" == "cleanmaui" ]; then
     CLEAN_XAMARIN=true
 fi
 
@@ -30,7 +30,7 @@ if [ "$1" == "cleanall" ] || [ "$2" == "cleanall" ]; then
     CLEAN_ALL=true
 fi
 
-if [ "$1" == "xamarinonly" ] || [ "$2" == "xamarinonly" ] ||  [ "$3" == "xamarinonly" ] ||  [ "$4" == "xamarinonly" ]; then
+if [ "$1" == "mauionly" ] || [ "$2" == "mauionly" ] ||  [ "$3" == "mauionly" ] ||  [ "$4" == "mauionly" ]; then
     BUILD_XAMARIN_ONLY=true
 fi
 
@@ -139,10 +139,10 @@ mkdir -p ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/lib/armeabi-v7a
 mkdir -p ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/lib/x86
 mkdir -p ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/lib/x86_64
 mkdir -p ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/Jars
-rsync -a ./lib/android_build/maesdk/build/intermediates/cmake/$BUILD_CONFIGURATION/obj/arm64-v8a/*.so ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/lib/arm64-v8a/
-rsync -a ./lib/android_build/maesdk/build/intermediates/cmake/$BUILD_CONFIGURATION/obj/armeabi-v7a/*.so ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/lib/armeabi-v7a/
-rsync -a ./lib/android_build/maesdk/build/intermediates/cmake/$BUILD_CONFIGURATION/obj/x86/*.so ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/lib/x86/
-rsync -a ./lib/android_build/maesdk/build/intermediates/cmake/$BUILD_CONFIGURATION/obj/x86_64/*.so ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/lib/x86_64/
+rsync -a ./lib/android_build/maesdk/build/intermediates/merged_native_libs/$BUILD_CONFIGURATION/mergeReleaseNativeLibs/out/lib/arm64-v8a/*.so ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/lib/arm64-v8a/
+rsync -a ./lib/android_build/maesdk/build/intermediates/merged_native_libs/$BUILD_CONFIGURATION/mergeReleaseNativeLibs/out/lib/armeabi-v7a/*.so ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/lib/armeabi-v7a/
+rsync -a ./lib/android_build/maesdk/build/intermediates/merged_native_libs/$BUILD_CONFIGURATION/mergeReleaseNativeLibs/out/lib/x86/*.so ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/lib/x86/
+rsync -a ./lib/android_build/maesdk/build/intermediates/merged_native_libs/$BUILD_CONFIGURATION/mergeReleaseNativeLibs/out/lib/x86_64/*.so ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/lib/x86_64/
 rsync -a ./lib/android_build/maesdk/build/outputs/aar/maesdk-$BUILD_CONFIGURATION.aar ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/Jars/
 
 # Build Xamarin Bindings Solution

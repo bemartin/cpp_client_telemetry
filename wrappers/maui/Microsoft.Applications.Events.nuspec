@@ -6,13 +6,13 @@
         <authors>Microsoft - One Observability</authors>
         <description>1DS C++ SDK .NET Bindings</description>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <copyright>Copyright 2024</copyright>
+        <copyright>Copyright 2025</copyright>
         <dependencies>
-            <group targetFramework="net8.0">
+            <group targetFramework="net9.0">
             </group>
-            <group targetFramework="net8.0-ios18.0">
+            <group targetFramework="net9.0-ios18.0">
             </group>
-            <group targetFramework="net8.0-android34.0">
+            <group targetFramework="net9.0-android35.0">
                 <dependency id="Xamarin.AndroidX.Room.Runtime" version="2.2.5.2" />
             </group>
         </dependencies>
@@ -20,16 +20,16 @@
     <files>
 
         <!-- Android -->
-        <file src="sdk/OneDsCppSdk.Android.Bindings/bin/Release/net8.0-android34.0/Microsoft.Applications.Events.dll" target="lib/net8.0-android34.0" />
-        <file src="sdk/OneDsCppSdk.Android.Bindings/bin/Release/net8.0-android34.0/Microsoft.Applications.Events.pdb" target="lib/net8.0-android34.0" />
-        <file src="sdk/OneDsCppSdk.Android.Bindings/bin/Release/net8.0-android34.0/maesdk-release.aar" target="lib/net8.0-android34.0" />
+        <file src="sdk/OneDsCppSdk.Android.Bindings/bin/Release/net9.0-android35.0/Microsoft.Applications.Events.dll" target="lib/net9.0-android35.0" />
+        <file src="sdk/OneDsCppSdk.Android.Bindings/bin/Release/net9.0-android35.0/Microsoft.Applications.Events.pdb" target="lib/net9.0-android35.0" />
+        <file src="sdk/OneDsCppSdk.Android.Bindings/bin/Release/net9.0-android35.0/maesdk-release.aar" target="lib/net9.0-android35.0" />
 
         <!-- iOS -->
-        <file src="sdk/OneDsCppSdk.iOS.Bindings/bin/Release/net8.0-ios18.0/ios-arm64/**/*" target="lib/net8.0-ios18.0" />
+        <file src="sdk/OneDsCppSdk.iOS.Bindings/bin/Release/net9.0-ios18.0/ios-arm64/**/*" target="lib/net9.0-ios18.0" />
 
         <!-- .NET -->
-        <file src="sdk/OneDsCppSdk.DotNet.Bindings/bin/Release/net8.0/Microsoft.Applications.Events.dll" target="lib/net8.0/Microsoft.Applications.Events.dll" />
-        <file src="sdk/OneDsCppSdk.DotNet.Bindings/bin/Release/net8.0/Microsoft.Applications.Events.pdb" target="lib/net8.0/Microsoft.Applications.Events.pdb" />
+        <file src="sdk/OneDsCppSdk.DotNet.Bindings/bin/Release/net9.0/Microsoft.Applications.Events.dll" target="lib/net9.0/Microsoft.Applications.Events.dll" />
+        <file src="sdk/OneDsCppSdk.DotNet.Bindings/bin/Release/net9.0/Microsoft.Applications.Events.pdb" target="lib/net9.0/Microsoft.Applications.Events.pdb" />
 
     </files>
 </package>
