@@ -7,11 +7,11 @@ if [ "$1" == "help" ] || [ "$1" == "?" ]; then
     echo
     echo "- debug|release: build configuration to use. Default to release of not specified"
     echo "- cleanall: deletes output and temporary directories for all platforms"
-    echo "- cleanmaui: deletes output and temporary directories for the Xamarin solution only"
-    echo "- mauionly: only builds the Xamarin solution, assuming that iOS and Android SDKs have already been built"
+    echo "- cleanmaui: deletes output and temporary directories for the MAUI solution only"
+    echo "- mauionly: only builds the MAUI solution, assuming that iOS and Android SDKs have already been built"
     echo "- skipios: skip building the SDK for iOS, assuming it has already been built"
     echo "- skipandroid: skip building the SDK for Android, assuming it has already been built"
-    echo "- package: packages the Xamarin bindings in a NuGet package"
+    echo "- package: packages the MAUI bindings in a NuGet package"
     echo
     exit 0
 fi
@@ -23,7 +23,7 @@ else
 fi
 
 if [ "$1" == "cleanmaui" ] || [ "$2" == "cleanmaui" ]; then
-    CLEAN_XAMARIN=true
+    CLEAN_MAUI=true
 fi
 
 if [ "$1" == "cleanall" ] || [ "$2" == "cleanall" ]; then
@@ -31,7 +31,7 @@ if [ "$1" == "cleanall" ] || [ "$2" == "cleanall" ]; then
 fi
 
 if [ "$1" == "mauionly" ] || [ "$2" == "mauionly" ] ||  [ "$3" == "mauionly" ] ||  [ "$4" == "mauionly" ]; then
-    BUILD_XAMARIN_ONLY=true
+    BUILD_MAUI_ONLY=true
 fi
 
 if [ "$1" == "skipios" ] || [ "$2" == "skipios" ] ||  [ "$3" == "skipios" ] ||  [ "$4" == "skipios" ]; then
@@ -59,12 +59,13 @@ echo "$GREEN ====== Build configuration = $BUILD_CONFIGURATION $NOCOLOR"
 
 # Clean
 
-if [ "$CLEAN_XAMARIN" == true ] || [ "$CLEAN_ALL" == true ]; then
-    echo "$GREEN ====== Cleaning Xamarin $NOCOLOR"
+if [ "$CLEAN_MAUI" == true ] || [ "$CLEAN_ALL" == true ]; then
+    echo "$GREEN ====== Cleaning MAUI $NOCOLOR"
 
     rm -rf ./wrappers/maui/sdk/OneDsCppSdk.iOS.Bindings/obj
     rm -rf ./wrappers/maui/sdk/OneDsCppSdk.iOS.Bindings/bin
-    rm "./wrappers/maui/sdk/OneDsCppSdk.iOS.Bindings/Native References/libmat.a"
+    rm -rf "./wrappers/maui/sdk/OneDsCppSdk.iOS.Bindings/Native References/libmat.xcframework"
+    rm -f "./wrappers/maui/sdk/OneDsCppSdk.iOS.Bindings/Native References/libmat.a"
 
     rm -rf ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/obj
     rm -rf ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/bin
@@ -78,7 +79,7 @@ fi
 # Fail on error
 set -e
 
-if [ "$BUILD_XAMARIN_ONLY" != true ]; then
+if [ "$BUILD_MAUI_ONLY" != true ]; then
 
     if [ "$SKIP_IOS_BUILD" != true ]; then
 
@@ -90,16 +91,54 @@ if [ "$BUILD_XAMARIN_ONLY" != true ]; then
         DO_CLEAN=""
     fi
 
-    for arch in arm64 arm64e x86_64
-    do
-        ./build-ios.sh $DO_CLEAN $BUILD_CONFIGURATION $arch
-        mv ./out/lib/libmat.a ./out/lib/libmat.$arch.a
+    # Set CMAKE_OPTS to enable sanitizer module
+    export CMAKE_OPTS="-DBUILD_SANITIZER=YES"
 
+    # Build for iOS device (iphoneos)
+    for arch in arm64 arm64e
+    do
+        ./build-ios.sh $DO_CLEAN $BUILD_CONFIGURATION $arch iphoneos
+        mv ./out/lib/libmat.a ./out/lib/libmat.iphoneos.$arch.a
         DO_CLEAN=""
     done
 
+    # Build for iOS simulator (iphonesimulator)
+    for arch in arm64 x86_64
+    do
+        ./build-ios.sh $BUILD_CONFIGURATION $arch iphonesimulator
+        mv ./out/lib/libmat.a ./out/lib/libmat.iphonesimulator.$arch.a
+    done
+
+    # Unset CMAKE_OPTS after iOS builds
+    unset CMAKE_OPTS
+
     pushd ./out/lib/
-    lipo -create -output libmat.a libmat.arm64.a libmat.arm64e.a libmat.x86_64.a
+
+    # Create fat binaries for each platform
+    echo "$GREEN ====== Creating fat binary for iphoneos $NOCOLOR"
+    lipo -create -output libmat.iphoneos.a libmat.iphoneos.arm64.a libmat.iphoneos.arm64e.a
+
+    echo "$GREEN ====== Creating fat binary for iphonesimulator $NOCOLOR"
+    lipo -create -output libmat.iphonesimulator.a libmat.iphonesimulator.arm64.a libmat.iphonesimulator.x86_64.a
+
+    # Create framework structures for each platform
+    echo "$GREEN ====== Creating framework for iphoneos $NOCOLOR"
+    mkdir -p iphoneos/libmat.framework/Headers
+    cp -R ../../lib/include/public/* iphoneos/libmat.framework/Headers/
+    cp libmat.iphoneos.a iphoneos/libmat.framework/libmat
+
+    echo "$GREEN ====== Creating framework for iphonesimulator $NOCOLOR"
+    mkdir -p iphonesimulator/libmat.framework/Headers
+    cp -R ../../lib/include/public/* iphonesimulator/libmat.framework/Headers/
+    cp libmat.iphonesimulator.a iphonesimulator/libmat.framework/libmat
+
+    # Create XCFramework that supports both device and simulator
+    echo "$GREEN ====== Creating XCFramework $NOCOLOR"
+    xcodebuild -create-xcframework \
+      -framework iphoneos/libmat.framework \
+      -framework iphonesimulator/libmat.framework \
+      -output libmat.xcframework
+
     popd
 
     fi
@@ -131,7 +170,7 @@ fi
 echo "$GREEN ====== Copying build artifacts $NOCOLOR"
 
 # Copy artifacts for iOS
-rsync -a ./out/lib/libmat.a "./wrappers/maui/sdk/OneDsCppSdk.iOS.Bindings/Native References/"
+rsync -a ./out/lib/libmat.xcframework "./wrappers/maui/sdk/OneDsCppSdk.iOS.Bindings/Native References/"
 
 # Copy artifacts for Android
 mkdir -p ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/lib/arm64-v8a
@@ -145,7 +184,7 @@ rsync -a ./lib/android_build/maesdk/build/intermediates/merged_native_libs/$BUIL
 rsync -a ./lib/android_build/maesdk/build/intermediates/merged_native_libs/$BUILD_CONFIGURATION/mergeReleaseNativeLibs/out/lib/x86_64/*.so ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/lib/x86_64/
 rsync -a ./lib/android_build/maesdk/build/outputs/aar/maesdk-$BUILD_CONFIGURATION.aar ./wrappers/maui/sdk/OneDsCppSdk.Android.Bindings/Jars/
 
-# Build Xamarin Bindings Solution
+# Build MAUI Bindings Solution
 pushd ./wrappers/maui
 
 if [ "$SKIP_IOS_BUILD" = true ]; then

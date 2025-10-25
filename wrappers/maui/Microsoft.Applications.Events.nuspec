@@ -2,7 +2,7 @@
 <package>
     <metadata>
         <id>Microsoft.Applications.Events</id>
-        <version>3.8.249.19-azuremobiletest</version>
+        <version>3.8.249.25-azuremobiletest</version>
         <authors>Microsoft - One Observability</authors>
         <description>1DS C++ SDK .NET Bindings</description>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -25,7 +25,9 @@
         <file src="sdk/OneDsCppSdk.Android.Bindings/bin/Release/net9.0-android35.0/maesdk-release.aar" target="lib/net9.0-android35.0" />
 
         <!-- iOS -->
-        <file src="sdk/OneDsCppSdk.iOS.Bindings/bin/Release/net9.0-ios18.0/ios-arm64/**/*" target="lib/net9.0-ios18.0" />
+        <file src="sdk/OneDsCppSdk.iOS.Bindings/bin/Release/net9.0-ios18.0/Microsoft.Applications.Events.dll" target="lib/net9.0-ios18.0" />
+        <file src="sdk/OneDsCppSdk.iOS.Bindings/bin/Release/net9.0-ios18.0/Microsoft.Applications.Events.pdb" target="lib/net9.0-ios18.0" />
+        <file src="sdk/OneDsCppSdk.iOS.Bindings/bin/Release/net9.0-ios18.0/Microsoft.Applications.Events.resources/**/*" target="lib/net9.0-ios18.0/Microsoft.Applications.Events.resources" />
 
         <!-- .NET -->
         <file src="sdk/OneDsCppSdk.DotNet.Bindings/bin/Release/net9.0/Microsoft.Applications.Events.dll" target="lib/net9.0/Microsoft.Applications.Events.dll" />

@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFrameworks>net9.0-ios18.0</TargetFrameworks>
-        <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
         <Nullable>enable</Nullable>
         <ImplicitUsings>true</ImplicitUsings>
         <IsBindingProject>true</IsBindingProject>
@@ -21,8 +20,8 @@
         </Compile>
     </ItemGroup>
     <ItemGroup>
-        <NativeReference Include="Native References/libmat.a">
-            <Kind>Static</Kind>
+        <NativeReference Include="Native References/libmat.xcframework">
+            <Kind>Framework</Kind>
             <IsCxx>True</IsCxx>
             <ForceLoad>True</ForceLoad>
             <SmartLink>True</SmartLink>
